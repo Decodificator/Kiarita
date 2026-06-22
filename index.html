@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Mi Niña Bonita</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+        width:100%;
+        height:100vh;
+        overflow:hidden;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:url("kiara.jpeg") center/cover no-repeat;
+        position:relative;
+    }
+
+    body::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        background:rgba(0,0,0,0.55);
+        backdrop-filter:blur(2px);
+    }
+    #startScreen{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:100;
+}
+
+#startBtn{
+    padding:20px 40px;
+    border:none;
+    border-radius:15px;
+    font-size:1.3rem;
+    cursor:pointer;
+    background:white;
+    transition:.3s;
+}
+
+#startBtn:hover{
+    transform:scale(1.05);
+}
+
+    .container{
+        position:relative;
+        z-index:2;
+        text-align:center;
+        width:90%;
+        max-width:900px;
+    }
+
+    .lyrics{
+        color:white;
+        font-size:3rem;
+        font-weight:bold;
+        text-shadow:0 0 15px rgba(0,0,0,0.8);
+        min-height:120px;
+        transition:all .5s ease;
+        letter-spacing: 2px;
+        line-height: 1.4;
+    }
+
+    
+
+    @keyframes fade{
+        from{
+            opacity:0;
+            transform:translateY(20px);
+        }
+        to{
+            opacity:1;
+            transform:translateY(0);
+        }
+    }
+
+    .btn{
+        margin-top:40px;
+        padding:15px 35px;
+        border:none;
+        border-radius:12px;
+        font-size:1.1rem;
+        cursor:pointer;
+        background:white;
+        color:black;
+        display:none;
+        transition:.3s;
+    }
+
+    .btn:hover{
+        transform:scale(1.05);
+    }
+
+    .letter{
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.85);
+        display:none;
+        justify-content:center;
+        align-items:center;
+        z-index:10;
+        animation:fade .5s ease;
+    }
+
+    .letter img{
+    width:90%;
+    max-width:500px;
+    border-radius:20px;
+    box-shadow:0 0 30px rgba(255,255,255,0.3);
+    }
+
+    @media(max-width:768px){
+        .lyrics{
+            font-size:2rem;
+        }
+    }
+</style>
+</head>
+<body>
+<div id="startScreen">
+    <button id="startBtn">💖 Comenzar 💖</button>
+</div>
+<div class="container">
+    <div class="lyrics" id="lyrics"></div>
+
+    <button class="btn" id="openBtn">
+        Abrir Carta 💌
+    </button>
+    <button class="btn" id="muteBtn" style="display:inline-block; margin-left:10px;">
+    🔊 Música
+    </button>
+</div>
+
+<div class="letter" id="letter">
+    <!-- CAMBIA "carta.jpg" POR TU IMAGEN -->
+    <img src="carta.jpg" alt="Carta">
+</div>
+
+<!-- CAMBIA "cancion.mp3" POR TU AUDIO -->
+<audio id="song">
+    <source src="niña.mp3" type="audio/mp3">
+</audio>
+
+<script>
+
+const lyrics = [
+
+    { time: 8, text: "Esta canción nació de un pensamiento..." },
+    { time: 11, text: "Y yo solo pienso en ti, mi niña bonita..." },
+    { time: 14, text: "Oye, tú reconoce' un hit cuando lo oye'..." },
+
+    { time: 18, text: "Lo que siento por ti es ternura y pasión..." },
+    { time: 22, text: "Tú me has hecho sentir que hay en mi corazón..." },
+    { time: 26, text: "Tanto amor..." },
+    { time: 29, text: "Tanto amor..." },
+    { time: 34, text: "Yo nací para ti, tú también para mí..." },
+    { time: 38, text: "Y ahora sé que morir es tratar de vivir..." },
+    { time: 41, text: "Sin tu amor..." },
+    { time: 45, text: "Sin tu amor..." },
+    { time: 49, text: "Mi niña bonita, mi dulce princesa..." },
+    { time: 53, text: "Me siento en las nubes cuando tú me besas..." },
+    { time: 57, text: "Y siento que vuelo más alto que el cielo..." },
+    { time: 61, text: "Si tengo de cerca el olor de tu pelo..." },
+
+    { time: 65, text: "Mi niña bonita, brillante lucero..." },
+    { time: 69, text: "Te queda pequeña la frase: Te quiero..." },
+    { time: 74, text: "Por eso mis labios te dice: Te amo..." },
+    { time: 78, text: "Cuando estamos juntos, más nos enamoramos..." },
+
+    { time: 82, text: "Aquí hay amor..." },
+    { time: 85, text: "Aquí hay amor..." },
+    { time: 89, text: "Aquí hay amor, amor, aquí hay amor, amor..." },
+    { time: 90, text: "amor..." },
+    { time: 91, text: "aquí hay amor..." },
+    { time: 92, text: "amor..." },
+    { time: 3, text: "Aquí hay, hay, hay, hay, hay amor..." },
+
+    { time: 133, text: "Este amor que cómo espuma sube..." },
+    { time: 139, text: "Que cuando te tomo de la mano..." },
+    { time: 144, text: "Por el parque, camino en las nubes..." },
+    { time: 150, text: "Parece mentira que ya no recuerdo nada..." },
+    { time: 156, text: "Cuando solo estuve..." },
+    { time: 161, text: "Nada se podrá comparar..." },
+    { time: 165, text: "Con algo tan especial..." },
+
+    { time: 171, text: "Le agradezco al tiempo..." },
+    { time: 176, text: "Que ha demostrado..." },
+    { time: 180, text: "Que las cosas buenas llegan..." },
+    { time: 185, text: "En cualquier momento..." },
+
+    { time: 191, text: "Yo no imaginaba que conocería..." },
+    { time: 197, text: "Algún día este sentimiento..." },
+    { time: 203, text: "Un amor puro y natural..." },
+    { time: 208, text: "Digno de admirar..." },
+
+    { time: 214, text: "Un amor de fantasía..." },
+    { time: 219, text: "Lleno de romance y alegría..." },
+    { time: 225, text: "De bello' detalle' cada día..." },
+    { time: 230, text: "Nena, ¿quién lo diría?..." },
+
+    { time: 236, text: "Que algún día yo me enamoraría..." },
+    { time: 242, text: "Y que sin tu amor no viviría..." },
+
+    { time: 248, text: "Cómo sabía que esto pasaría..." },
+    { time: 253, text: "Que ibas a ser mía..." },
+    { time: 257, text: "Y que yo querría amarte siempre..." },
+
+    { time: 264, text: "Amarte por siempre..." },
+    { time: 268, text: "Mi niña bonita..." },
+
+    { time: 274, text: "Mi niña bonita, mi dulce princesa..." },
+    { time: 280, text: "Me siento en las nubes cuando tú me besas..." },
+    { time: 287, text: "Y siento que vuelo más alto que el cielo..." },
+    { time: 293, text: "Si tengo de cerca el olor de tu pelo..." },
+
+    { time: 300, text: "Mi niña bonita, brillante lucero..." },
+    { time: 306, text: "Te queda pequeña la frase: Te quiero..." },
+    { time: 313, text: "Por eso mis labios te dicen: Te amo..." },
+    { time: 319, text: "Cuando estamos juntos más nos enamoramos..." },
+
+    { time: 326, text: "Aquí hay amor..." },
+    { time: 330, text: "Aquí hay amor..." },
+    { time: 334, text: "Aquí hay amor, amor, aquí hay amor, amor..." },
+    { time: 341, text: "Aquí hay, hay, hay, hay, hay amor..." },
+
+    { time: 349, text: "Desde este momento..." },
+    { time: 354, text: "No podrás sacar esta canción de tu cabeza..." },
+
+    { time: 361, text: "Chino & Nacho..." },
+    { time: 365, text: "Mi niña bonita..." },
+    { time: 369, text: "Richy Peña..." },
+
+    { time: 374, text: "Tú y únicamente tú..." },
+    { time: 379, text: "Mi niña bonita..." },
+
+    { time: 384, text: "Más na'..." },
+    { time: 388, text: "Esto es un hit mundial..." },
+    { time: 393, text: "Más na' te digo..." }
+
+];
+
+
+const song = document.getElementById("song");
+const lyricsContainer = document.getElementById("lyrics");
+const openBtn = document.getElementById("openBtn");
+const letter = document.getElementById("letter");
+const startBtn = document.getElementById("startBtn");
+const startScreen = document.getElementById("startScreen");
+const muteBtn = document.getElementById("muteBtn");
+
+let current = -1;
+
+let typingInterval;
+
+function typeText(text){
+
+    clearInterval(typingInterval);
+
+    lyricsContainer.innerHTML = "";
+
+    let i = 0;
+
+    typingInterval = setInterval(() => {
+
+        lyricsContainer.innerHTML += text.charAt(i);
+
+        i++;
+
+        if(i >= text.length){
+
+            clearInterval(typingInterval);
+        }
+
+    }, 60);
+}
+
+song.addEventListener("timeupdate", () => {
+
+    const currentTime = song.currentTime;
+
+    if(
+        current + 1 < lyrics.length &&
+        currentTime >= lyrics[current + 1].time
+    ){
+
+        current++;
+
+        typeText(lyrics[current].text);
+    }
+});
+
+setTimeout(() => {
+    openBtn.style.display = "inline-block";
+}, 30000);
+
+openBtn.addEventListener("click", () => {
+    letter.style.display = "flex";
+});
+
+muteBtn.addEventListener("click", () => {
+
+    song.muted = !song.muted;
+
+    if(song.muted){
+        muteBtn.innerText = "🔇 Silenciado";
+    }else{
+        muteBtn.innerText = "🔊 Música";
+    }
+});
+
+startBtn.addEventListener("click", () => {
+
+    song.play();
+
+    startScreen.style.display = "none";
+});
+</script>
+
+</body>
+</html>
